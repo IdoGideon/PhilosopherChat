@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>צ׳אט פילוסופי</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            direction: rtl;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: auto;
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #0078D7;
+            font-size: 24px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        select, input, button {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #0078D7;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #005BB5;
+        }
+
+        #chatbox {
+            width: 100%;
+            height: 400px;
+            overflow-y: auto;
+            border: 2px solid #0078D7;
+            padding: 1px;
+            border-radius: 5px;
+            background: #ffffff;
+            font-size: 16px;
+            text-align: right;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            margin-left: 20%;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 8px;
+            width: fit-content;
+            max-width: 80%;
+            margin: 5px;
+            font-size: 14px;
+        }
+
+        .user-message {
+            background: #d1ffd6;
+            align-self: flex-end;
+            text-align: right;
+        }
+
+        .bot-message {
+            background: #f0f0f0;
+            align-self: flex-start;
+            text-align: left;
+        }
+
+        p strong {
+            color: #0078D7;
+        }
+
+        .input-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #userMessage {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>צ׳אט פילוסופי</h1>
+
+        <div class="controls">
+            <label for="philosopher">בחר פילוסוף:</label>
+            <select id="philosopher">
+                <option value="socrates">סוקרטס</option>
+                <option value="rousseau">ז'אן-ז'אק רוסו</option>
+                <option value="dewey">ג'ון דיואי</option>
+            </select>
+        </div>
+
+        <div id="chatbox"></div>
+
+        <div class="input-container">
+            <input type="text" id="userMessage" placeholder="הקלד את ההודעה שלך..." onkeypress="handleKeyPress(event)">
+            <div class="buttons">
+                <button onclick="sendMessage()">שלח</button>
+                <button onclick="clearChat()">🧹 נקה צ'אט</button>
+                <button onclick="downloadChat()">📥 הורד צ'אט</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let conversationHistory = []; // שמירת היסטוריית השיחה
+
+        async function sendMessage() {
+    let userMessage = document.getElementById("userMessage").value.trim();
+    let philosopher = document.getElementById("philosopher").value;
+    let chatbox = document.getElementById("chatbox");
+
+    if (userMessage === "") return; // לא לשלוח הודעה ריקה
+
+    chatbox.innerHTML += `<p class="message user-message"><strong>אתה:</strong> ${userMessage}</p>`;
+    document.getElementById("userMessage").value = ""; // ניקוי השדה
+
+    // הוספת הודעת המשתמש להיסטוריה
+    conversationHistory.push({ role: "user", content: userMessage });
+
+    try {
+        let response = await fetch("http://localhost:3000/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                philosopher: philosopher,
+                userMessage: userMessage,
+                conversationHistory: conversationHistory
+            })
+        });
+
+        let data = await response.json();
+        const aiResponse = data.response;
+
+        // הוספת תשובת הבוט להיסטוריה
+        conversationHistory.push({ role: "assistant", content: aiResponse });
+
+        // הדפסת התשובה לאט לאט (אות אחרי אות)
+        let i = 0;
+        chatbox.innerHTML += `<p class="message bot-message"><strong>${data.philosopher}:</strong> </p>`;
+        const messageContainer = chatbox.lastElementChild;
+
+        function typeWriter() {
+            if (i < aiResponse.length) {
+                messageContainer.innerHTML += aiResponse.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50); // 50 מ"ל הזמן בין כל תו
+            }
+        }
+
+        // התחלת הדפסת התשובה
+        typeWriter();
+        
+        // גלול אוטומטית לתגובה האחרונה
+        chatbox.scrollTop = chatbox.scrollHeight;
+
+    } catch (error) {
+        chatbox.innerHTML += `<p class="message bot-message"><strong>שגיאה:</strong> לא ניתן לקבל תשובה מהשרת.</p>`;
+        console.error("Error:", error);
+    }
+}
+
+        function clearChat() {
+            document.getElementById("chatbox").innerHTML = ""; // מנקה את הצ'אט
+            conversationHistory = []; // מאפס את ההיסטוריה
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function downloadChat() {
+            if (conversationHistory.length === 0) {
+                alert("הצ'אט ריק, אין מה להוריד!");
+                return;
+            }
+
+            let chatText = conversationHistory.map(msg => {
+                let sender = msg.role === "user" ? "אתה" : "הפילוסוף";
+                return `${sender}: ${msg.content}`;
+            }).join("\n");
+
+            let blob = new Blob([chatText], { type: "text/plain" });
+            let a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "chat_history.txt";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>
