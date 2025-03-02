@@ -1,17 +1,29 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+// Serve static files from the current directory
+app.use(express.static(__dirname));
+
+// Make sure the root route sends the index.html file
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // 🔍 בדיקה שה-API Key מוגדר
 if (!OPENAI_API_KEY) {
     console.error("🔴 OpenAI API Key is missing! Make sure it's set in the .env file.");
-    process.exit(1); // עצירת השרת אם אין מפתח
+    // Don't exit in production, just log the error
+    if (process.env.NODE_ENV !== 'production') {
+        process.exit(1); // עצירת השרת אם אין מפתח
+    }
 }
 
 // 🎭 הגדרת הפילוסופים
@@ -189,28 +201,27 @@ app.post('/chat', async (req, res) => {
 
         console.log(`✅ AI Response After Correction: ${aiResponse}`);
         console.log(`✅ Returning response: ${aiResponse}, Philosopher: ${philosopherNames[philosopher]}`);
-        // עדכון היסטוריית השיחה כך שהשם יופיע בעברית
-// ✅ עדכון היסטוריית השיחה כך שהשם יופיע בעברית
+        
+        // ✅ עדכון היסטוריית השיחה כך שהשם יופיע בעברית
+        conversationHistory.push({
+            role: "assistant",
+            content: aiResponse,
+            name: philosopherNames[philosopher] || philosopher // הצגת השם בעברית בהיסטוריה
+        });
 
-conversationHistory.push({
-    role: "assistant",
-    content: aiResponse,
-    name: philosopherNames[philosopher] || philosopher // הצגת השם בעברית בהיסטוריה
-});
-
-// ✅ שליחת התשובה והיסטוריית השיחה המתוקנת ל-Frontend
-res.json({ 
-    response: aiResponse,
-    philosopher: philosopherNames[philosopher] || philosopher, // שם הפילוסוף בעברית
-    conversationHistory // שליחת ההיסטוריה המעודכנת ל-Frontend
-});
+        // ✅ שליחת התשובה והיסטוריית השיחה המתוקנת ל-Frontend
+        res.json({ 
+            response: aiResponse,
+            philosopher: philosopherNames[philosopher] || philosopher, // שם הפילוסוף בעברית
+            conversationHistory // שליחת ההיסטוריה המעודכנת ל-Frontend
+        });
     } catch (error) {
         console.error("🔴 OpenAI API Error:", error.message);
         res.status(500).json({ error: "שגיאה בקבלת מענה", details: error.message });
     }
 });
 
-app.listen(3000, () => console.log("🚀 Server running on port 3000"));
+// Set up the port for Render compatibility
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
