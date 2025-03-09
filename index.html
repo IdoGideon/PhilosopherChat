@@ -143,94 +143,14 @@
     </div>
 
     <script>
-        let conversationHistory = []; // שמירת היסטוריית השיחה
-
-        async function sendMessage() {
-    let userMessage = document.getElementById("userMessage").value.trim();
-    let philosopher = document.getElementById("philosopher").value;
-    let chatbox = document.getElementById("chatbox");
-
-    if (userMessage === "") return; // לא לשלוח הודעה ריקה
-
-    chatbox.innerHTML += `<p class="message user-message"><strong>אתה:</strong> ${userMessage}</p>`;
-    document.getElementById("userMessage").value = ""; // ניקוי השדה
-
-    // הוספת הודעת המשתמש להיסטוריה
-    conversationHistory.push({ role: "user", content: userMessage });
-
-    try {
-        let response = await fetch("http://localhost:3000/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                philosopher: philosopher,
-                userMessage: userMessage,
-                conversationHistory: conversationHistory
-            })
-        });
-
-        let data = await response.json();
-        const aiResponse = data.response;
-
-        // הוספת תשובת הבוט להיסטוריה
-        conversationHistory.push({ role: "assistant", content: aiResponse });
-
-        // הדפסת התשובה לאט לאט (אות אחרי אות)
-        let i = 0;
-        chatbox.innerHTML += `<p class="message bot-message"><strong>${data.philosopher}:</strong> </p>`;
-        const messageContainer = chatbox.lastElementChild;
-
-        function typeWriter() {
-            if (i < aiResponse.length) {
-                messageContainer.innerHTML += aiResponse.charAt(i);
-                i++;
-                setTimeout(typeWriter, 50); // 50 מ"ל הזמן בין כל תו
-            }
-        }
-
-        // התחלת הדפסת התשובה
-        typeWriter();
-        
-        // גלול אוטומטית לתגובה האחרונה
-        chatbox.scrollTop = chatbox.scrollHeight;
-
-    } catch (error) {
-        chatbox.innerHTML += `<p class="message bot-message"><strong>שגיאה:</strong> לא ניתן לקבל תשובה מהשרת.</p>`;
-        console.error("Error:", error);
-    }
-}
-
-        function clearChat() {
-            document.getElementById("chatbox").innerHTML = ""; // מנקה את הצ'אט
-            conversationHistory = []; // מאפס את ההיסטוריה
-        }
-
         function handleKeyPress(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
                 sendMessage();
             }
         }
-
-        function downloadChat() {
-            if (conversationHistory.length === 0) {
-                alert("הצ'אט ריק, אין מה להוריד!");
-                return;
-            }
-
-            let chatText = conversationHistory.map(msg => {
-                let sender = msg.role === "user" ? "אתה" : "הפילוסוף";
-                return `${sender}: ${msg.content}`;
-            }).join("\n");
-
-            let blob = new Blob([chatText], { type: "text/plain" });
-            let a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = "chat_history.txt";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
     </script>
+
+    <script src="script.js"></script>
 </body>
 </html>
