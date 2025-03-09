@@ -15,7 +15,8 @@
         }
 
         .container {
-            width: 50%;
+            width: 90%;
+            max-width: 800px;
             margin: auto;
             margin-top: 20px;
             background: white;
@@ -59,10 +60,10 @@
 
         #chatbox {
             width: 100%;
-            height: 400px;
+            height: 60vh;
             overflow-y: auto;
             border: 2px solid #0078D7;
-            padding: 1px;
+            padding: 10px;
             border-radius: 5px;
             background: #ffffff;
             font-size: 16px;
@@ -70,7 +71,6 @@
             margin-bottom: 10px;
             display: flex;
             flex-direction: column;
-            margin-left: 20%;
         }
 
         .message {
@@ -115,6 +115,35 @@
             display: flex;
             gap: 5px;
         }
+
+        @media (max-width: 600px) {
+            .controls, .input-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            select, input, button {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            #chatbox {
+                font-size: 14px;
+                height: 60vh;
+            }
+
+            .message {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -143,94 +172,14 @@
     </div>
 
     <script>
-        let conversationHistory = []; // שמירת היסטוריית השיחה
-
-        async function sendMessage() {
-    let userMessage = document.getElementById("userMessage").value.trim();
-    let philosopher = document.getElementById("philosopher").value;
-    let chatbox = document.getElementById("chatbox");
-
-    if (userMessage === "") return; // לא לשלוח הודעה ריקה
-
-    chatbox.innerHTML += `<p class="message user-message"><strong>אתה:</strong> ${userMessage}</p>`;
-    document.getElementById("userMessage").value = ""; // ניקוי השדה
-
-    // הוספת הודעת המשתמש להיסטוריה
-    conversationHistory.push({ role: "user", content: userMessage });
-
-    try {
-        let response = await fetch("/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-        philosopher: philosopher,
-        userMessage: userMessage,
-        conversationHistory: conversationHistory
-    })
-});
-
-        let data = await response.json();
-        const aiResponse = data.response;
-
-        // הוספת תשובת הבוט להיסטוריה
-        conversationHistory.push({ role: "assistant", content: aiResponse });
-
-        // הדפסת התשובה לאט לאט (אות אחרי אות)
-        let i = 0;
-        chatbox.innerHTML += `<p class="message bot-message"><strong>${data.philosopher}:</strong> </p>`;
-        const messageContainer = chatbox.lastElementChild;
-
-        function typeWriter() {
-            if (i < aiResponse.length) {
-                messageContainer.innerHTML += aiResponse.charAt(i);
-                i++;
-                setTimeout(typeWriter, 50); // 50 מ"ל הזמן בין כל תו
-            }
-        }
-
-        // התחלת הדפסת התשובה
-        typeWriter();
-        
-        // גלול אוטומטית לתגובה האחרונה
-        chatbox.scrollTop = chatbox.scrollHeight;
-
-    } catch (error) {
-        chatbox.innerHTML += `<p class="message bot-message"><strong>שגיאה:</strong> לא ניתן לקבל תשובה מהשרת.</p>`;
-        console.error("Error:", error);
-    }
-}
-
-        function clearChat() {
-            document.getElementById("chatbox").innerHTML = ""; // מנקה את הצ'אט
-            conversationHistory = []; // מאפס את ההיסטוריה
-        }
-
         function handleKeyPress(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
                 sendMessage();
             }
         }
-
-        function downloadChat() {
-            if (conversationHistory.length === 0) {
-                alert("הצ'אט ריק, אין מה להוריד!");
-                return;
-            }
-
-            let chatText = conversationHistory.map(msg => {
-                let sender = msg.role === "user" ? "אתה" : "הפילוסוף";
-                return `${sender}: ${msg.content}`;
-            }).join("\n");
-
-            let blob = new Blob([chatText], { type: "text/plain" });
-            let a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = "chat_history.txt";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
     </script>
+
+    <script src="script.js"></script>
 </body>
 </html>
