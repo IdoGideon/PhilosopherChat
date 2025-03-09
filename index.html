@@ -159,15 +159,15 @@
     conversationHistory.push({ role: "user", content: userMessage });
 
     try {
-        let response = await fetch("http://localhost:3000/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                philosopher: philosopher,
-                userMessage: userMessage,
-                conversationHistory: conversationHistory
-            })
-        });
+        let response = await fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        philosopher: philosopher,
+        userMessage: userMessage,
+        conversationHistory: conversationHistory
+    })
+});
 
         let data = await response.json();
         const aiResponse = data.response;
