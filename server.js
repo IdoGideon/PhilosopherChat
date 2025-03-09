@@ -5,8 +5,9 @@ const path = require('path');
 
 const app = express();
 app.use(express.json());
-app.use(cors());
-
+app.use(cors({
+  origin: ['https://philosopherchat-1.onrender.com', 'http://localhost:3000']
+}));
 // Serve static files from the current directory
 app.use(express.static(__dirname));
 
