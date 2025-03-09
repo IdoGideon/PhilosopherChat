@@ -159,7 +159,7 @@
     conversationHistory.push({ role: "user", content: userMessage });
 
     try {
-        let response = await fetch("http://localhost:3000/chat", {
+        let response = await fetch(""https://philosopherchat-1.onrender.com/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
