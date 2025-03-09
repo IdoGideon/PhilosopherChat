@@ -15,9 +15,10 @@
         }
 
         .container {
-            width: 80%;
-            max-width: 700px;
-            margin: 20px auto;
+            width: 90%;
+            max-width: 800px;
+            margin: auto;
+            margin-top: 20px;
             background: white;
             padding: 20px;
             border-radius: 10px;
@@ -67,10 +68,9 @@
             background: #ffffff;
             font-size: 16px;
             text-align: right;
-            margin: 10px auto;
+            margin-bottom: 10px;
             display: flex;
             flex-direction: column;
-            box-sizing: border-box;
         }
 
         .message {
@@ -117,36 +117,31 @@
         }
 
         @media (max-width: 600px) {
-            body {
-                padding: 5px;
-            }
-            .container {
-                width: 95%;
-                padding: 10px;
-                margin-top: 10px;
-            }
-            #chatbox {
-                height: 70vh;
-                padding: 5px;
-                font-size: 14px;
-            }
-            .message {
-                max-width: 90%;
-                font-size: 12px;
-            }
             .controls, .input-container {
                 flex-direction: column;
                 align-items: stretch;
             }
-            select, input, button, .buttons {
+
+            select, input, button {
                 width: 100%;
                 box-sizing: border-box;
             }
+
             .buttons {
                 flex-direction: column;
             }
+
             h1 {
                 font-size: 20px;
+            }
+
+            #chatbox {
+                font-size: 14px;
+                height: 60vh;
+            }
+
+            .message {
+                font-size: 12px;
             }
         }
     </style>
