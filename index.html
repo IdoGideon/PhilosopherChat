@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang=\"he\">
+<html lang="he">
 <head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>צ׳אט פילוסופי</title>
     <style>
         body {
@@ -15,10 +15,9 @@
         }
 
         .container {
-            width: 90%;
-            max-width: 800px;
-            margin: auto;
-            margin-top: 20px;
+            width: 80%;
+            max-width: 700px;
+            margin: 20px auto;
             background: white;
             padding: 20px;
             border-radius: 10px;
@@ -59,7 +58,7 @@
         }
 
         #chatbox {
-            width: 100%;
+            width: 90%;
             height: 60vh;
             overflow-y: auto;
             border: 2px solid #0078D7;
@@ -68,7 +67,7 @@
             background: #ffffff;
             font-size: 16px;
             text-align: right;
-            margin-bottom: 10px;
+            margin: 10px auto;
             display: flex;
             flex-direction: column;
         }
@@ -121,11 +120,12 @@
                 padding: 5px;
             }
             .container {
-                width: 100%;
+                width: 95%;
                 padding: 10px;
                 margin-top: 10px;
             }
             #chatbox {
+                width: 100%;
                 height: 70vh;
                 padding: 5px;
                 font-size: 14px;
@@ -152,39 +152,39 @@
     </style>
 </head>
 <body>
-    <div class=\"container\">
+    <div class="container">
         <h1>צ׳אט פילוסופי</h1>
 
-        <div class=\"controls\">
-            <label for=\"philosopher\">בחר פילוסוף:</label>
-            <select id=\"philosopher\">
-                <option value=\"socrates\">סוקרטס</option>
-                <option value=\"rousseau\">ז'אן-ז'אק רוסו</option>
-                <option value=\"dewey\">ג'ון דיואי</option>
+        <div class="controls">
+            <label for="philosopher">בחר פילוסוף:</label>
+            <select id="philosopher">
+                <option value="socrates">סוקרטס</option>
+                <option value="rousseau">ז'אן-ז'אק רוסו</option>
+                <option value="dewey">ג'ון דיואי</option>
             </select>
         </div>
 
-        <div id=\"chatbox\"></div>
+        <div id="chatbox"></div>
 
-        <div class=\"input-container\">
-            <input type=\"text\" id=\"userMessage\" placeholder=\"הקלד את ההודעה שלך...\" onkeypress=\"handleKeyPress(event)\">
-            <div class=\"buttons\">
-                <button onclick=\"sendMessage()\">שלח</button>
-                <button onclick=\"clearChat()\">🧹 נקה צ'אט</button>
-                <button onclick=\"downloadChat()\">📥 הורד צ'אט</button>
+        <div class="input-container">
+            <input type="text" id="userMessage" placeholder="הקלד את ההודעה שלך..." onkeypress="handleKeyPress(event)">
+            <div class="buttons">
+                <button onclick="sendMessage()">שלח</button>
+                <button onclick="clearChat()">🧹 נקה צ'אט</button>
+                <button onclick="downloadChat()">📥 הורד צ'אט</button>
             </div>
         </div>
     </div>
 
     <script>
         function handleKeyPress(event) {
-            if (event.key === \"Enter\") {
+            if (event.key === "Enter") {
                 event.preventDefault();
                 sendMessage();
             }
         }
     </script>
 
-    <script src=\"script.js\"></script>
+    <script src="script.js"></script>
 </body>
 </html>
